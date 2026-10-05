@@ -163,6 +163,7 @@ technology_order = technology_types
 fig3.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Technology Area', title=f'Technology Area funded by date ({owner_types[0]})', hovermode='x unified',\
                   yaxis=dict(categoryorder='array', categoryarray=technology_order))
+fig3.update_layout(width=1400, height=1200)
 st.write(fig3)
 
 st.subheader("Plot of Total Project Budgets vs Technology (use as test)")
