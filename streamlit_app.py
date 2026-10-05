@@ -47,6 +47,11 @@ owner_types = owners.unique()
 owner_types = [ot for ot in owner_types if pd.notna(ot)]
 owner_types_idx = [owners[owners.str.contains(ot, na=False)].index.tolist() for ot in owner_types]
 
+#Do the same for strategy themes as well
+strategy_types = strategy.unique()
+strategy_types = [st for st in strategy_types if pd.notna(st)]
+strategy_types_idx = [strategy[strategy.str.contains(st, na=False)].index.tolist() for st in strategy_types]
+
 #Do the same for technology as well
 technology_types = ['Active Network Management','Asset Management', 'Biomethane', 'Carbon Emission Reduction Technologies', 'Commercial', 'Comms and IT',\
                     'Community Schemes', 'Condition Monitoring', 'Conductors', 'Control Systems', 'Cyber Security', 'Demand Response', 'Demand Side Management',\
@@ -92,6 +97,46 @@ if st.session_state.selected_sector is not None:
   if st.button("Hide Table", key="hide_table"):
     st.session_state.selected_sector = None
     st.rerun()
+
+st.subheader("Plot of Total Project Budgets vs Sector, no double counting (use as test)")
+#Plot of total project budgets vs sector, where there is no double counting
+all_sector_types = sector.unique()
+all_sector_types = [ast for ast in all_sector_types if pd.notna(ast)]
+all_sector_types_idx = [sector[sector.str.contains(ast, na=False)].index.tolist() for ast in all_sector_types]
+
+all_sector_budget = (pd.DataFrame({'sector': sector, 'budget': budget})).dropna(subset=['sector']).groupby('sector')['budget'].sum().sort_values(ascending=False)
+
+fig = px.bar(x=all_sector_budget.index, y=all_sector_budget.values, labels={'x':'Sector', 'y':'Total Funding (£)'})
+st.write(fig)
+
+st.subheader("Plot of technology types for each strategy theme")
+#Create plots that display the technologies funded in each sector
+tech_4_strat = []
+for i in range(len(strategy_types)):
+  filtered_tech = technology[strategy_types_idx[i]].dropna()
+  filtered_tech = filtered_tech.str.split(', ').explode().str.strip()
+  tech_4_strat.append(filtered_tech)
+
+tech_4_strat_type = []
+for i in range(len(strategy_types)):
+  counts = tech_4_strat[i].value_counts()
+  counts = counts.reindex(technology_types, fill_value=0)
+  tech_4_strat_type.append(counts)
+
+bts_tech_4_strat_type = []
+bts_technology_types = []
+for i in range(len(strategy_types)):
+  counts = tech_4_strat_type[i].sort_values(ascending=False)
+  non_zero_counts = counts[counts > 0]
+  bts_technology_types.append(non_zero_counts.index)
+  bts_tech_4_strat_type.append(non_zero_counts)
+
+fig = make_subplots(rows=len(strategy_types), cols=1, subplot_titles=strategy_types)
+for i in range(len(strategy_types)):
+  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_strat_type[i].values), row=i+1, col=1)
+fig.update_layout(height=2000, width=1350, showlegend=False)
+fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
+st.write(fig)
 
 st.subheader("Plot of Count vs Technology Area (for each sector - use as test)")
 st.write("(Description of plot to be included here)")
