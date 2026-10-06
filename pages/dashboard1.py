@@ -146,11 +146,11 @@ for sc in sector_types:
   fig.add_trace(go.Scatter(x=start_dt_sort, y=sector_cumul[sc], mode='lines+markers', name=sc, visible=False))
 
 buttons = []
-buttons.append(dict(label='Total', method='update', args=[{'visible': [True] + [False]*len(sector_types)}, {'title': 'Cumulative Number of All Projects'}]))
+buttons.append(dict(label='Total', method='update', args=[{'visible': [True] + [False]*len(sector_types)}, {'title':{'text': 'Cumulative Number of All Projects'}}]))
 for i, sc in enumerate(sector_types):
   visible = [False] * (len(sector_types) + 1)
   visible[i+1] = True
-  buttons.append(dict(label=sc, method='update', args=[{'visible': visible}, {'title': f'Cumulative Number of {sc} Projects'}]))
+  buttons.append(dict(label=sc, method='update', args=[{'visible': visible}, {'title':{'text': f'Cumulative Number of {sc} Projects'}}]))
 
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
