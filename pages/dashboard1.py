@@ -178,11 +178,22 @@ for i in range(len(strategy_types)):
   bts_technology_types.append(non_zero_counts.index)
   bts_tech_4_strat_type.append(non_zero_counts)
 
-fig = make_subplots(rows=len(strategy_types), cols=1, subplot_titles=strategy_types)
-for i in range(len(strategy_types)):
-  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_strat_type[i].values), row=i+1, col=1)
-fig.update_layout(height=2000, width=1350, showlegend=False)
-fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
+fig = go.Figure()
+fig.add_trace(go.Bar(x=bts_technology_types[0], y=bts_tech_4_strat_type[0].values, name=f'{strategy_types[0]}'))
+for i in range(1, len(strategy_types)):
+  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_strat_type[i].values, name=f'{strategy_types[i]}', visible=False))
+
+buttons = []
+buttons.append(dict(label=f'{strategy_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(strategy_types) - 1)}, {'title':{'text': f'Cumulative Number of Projects for {strategy_types[0]}'}}]))
+for i in range(1, len(strategy_types)):
+  visible = [False] * (len(strategy_types))
+  visible[i] = True
+  buttons.append(dict(label=f'{strategy_types[i]}', method='update', args=[{'visible': visible}, {'title':{'text': f'Cumulative Number of Projects for {strategy_types[i]}'}}]))
+
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.1, yanchor='top')],
+                  xaxis_title='Technology', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
+fig.update_layout(width=1400, height=600)
+fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
 
 st.subheader("Plot of Count vs Technology Area (for each sector - use as test)")
@@ -245,7 +256,7 @@ for i in range(len(owner_types)-1):
   fig.add_trace(go.Scatter(x=tech_4_owner_start_dt[i+1], y=tech_4_owner[i+1], mode='markers', name=f'{owner_types[i+1]}', visible=False))
 
 buttons = []
-buttons.append(dict(label=f'{owner_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(owner_types) - 1)}, {'title': f'Technology Area funded by date ({owner_types[0]})'}]))
+buttons.append(dict(label=f'{owner_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(owner_types) - 1)}, {'title':{'text': f'Technology Area funded by date ({owner_types[0]})'}}]))
 for i in range(1, len(owner_types)):
   visible = [False] * (len(owner_types))
   visible[i] = True
@@ -301,7 +312,7 @@ for i in range(1, len(sector_types)):
   fig.add_trace(go.Bar(x=bts_research_types[i], y=bts_research_4_sect_type[i], name=f'{sector_types[i]}', visible=False))
 
 buttons = []
-buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title': f'Research Areas for ({sector_types[0]})'}]))
+buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title': {'text': f'Research Areas for ({sector_types[0]})'}}]))
 for i in range(1, len(sector_types)):
   visible = [False] * (len(sector_types))
   visible[i] = True
