@@ -69,6 +69,11 @@ research_types = ['ED - Customer and stakeholder focus', 'ED - Network improveme
 research_types = [rt for rt in research_types if pd.notna(rt)]
 research_types_idx = [research[research.str.contains(rt, na=False)].index.tolist() for rt in research_types]
 
+#Do the same for funding mechanism as well
+funding_mechanism_types = funding_mechanism.unique()
+funding_mechanism_types = [ft for ft in funding_mechanism_types if pd.notna(ft)]
+funding_mechanism_types_idx = [funding_mechanism[funding_mechanism.str.contains(ft, na=False)].index.tolist() for ft in funding_mechanism_types]
+
 st.subheader("Plot of Total Project Budgets vs Sector (use as test)")
 st.write("(Description of plot to be included here)")
 total_sector_budget = np.zeros(len(sector_types))
@@ -333,6 +338,57 @@ research_order = research_types
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.15, yanchor='top')],
                   xaxis_title='Research Area', yaxis_title='Total Number of Projects in Research Area', title=f'Research Areas for {sector_types[0]}', hovermode='x unified',
                   yaxis=dict(categoryorder='array', categoryarray=research_order, automargin=True))
+fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
+fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
+st.write(fig)
+
+st.subheader("Plot title here")
+#Plot funding mechanisms vs dates, to verify they change as stated
+start_dt_4_fundmech = []
+for i, fundmech in enumerate(funding_mechanism):
+  if pd.notna(fundmech):
+    start_dt_4_fundmech.append(start_dt[i])
+
+chron_start_dt_4_fundmech = np.sort(start_dt_4_fundmech)
+chron_start_dt_4_fundmech_idx = np.argsort(start_dt_4_fundmech)
+fundmech_4_chron_start_dt = np.array(funding_mechanism)[chron_start_dt_4_fundmech_idx]
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=chron_start_dt_4_fundmech, y=fundmech_4_chron_start_dt, mode='markers', showlegend=False))
+fig.update_layout(height=600, width=1200, xaxis_title='Date (DD-MM-YY)', yaxis_title='Funding Mechanism')
+st.write(fig)
+
+st.subheader("Plot title here")
+#Plot funding mechanism vs technology
+tech_4_fundmech = []
+for i in range(len(funding_mechanism_types)):
+  filtered_tech = technology[funding_mechanism_types_idx[i]].dropna()
+  filtered_tech = filtered_tech.str.split(', ').explode().str.strip()
+  tech_4_fundmech.append(filtered_tech)
+
+tech_4_fundmech_type = []
+for i in range(len(funding_mechanism_types)):
+  counts = tech_4_fundmech[i].value_counts()
+  counts = counts.reindex(technology_types, fill_value=0)
+  non_zero_counts = counts[counts > 0]
+  tech_4_fundmech_type.append(non_zero_counts)
+
+fig = go.Figure()
+fig.add_trace(go.Bar(x=tech_4_fundmech_type[0].index, y=tech_4_fundmech_type[0].values, name=f'{funding_mechanism_types[0]}'))
+for i in range(1, len(funding_mechanism_types)):
+  fig.add_trace(go.Bar(x=tech_4_fundmech_type[i].index, y=tech_4_fundmech_type[i].values, name=f'{funding_mechanism_types[i]}', visible=False))
+
+buttons = []
+buttons.append(dict(label=f'{funding_mechanism_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(funding_mechanism_types) - 1)}, {'title': f'Technology Areas for {funding_mechanism_types[0]}'}]))
+for i in range(1, len(funding_mechanism_types)):
+  visible = [False] * (len(funding_mechanism_types))
+  visible[i] = True
+  buttons.append(dict(label=f'{funding_mechanism_types[i]}', method='update', args=[{'visible': visible}, {'title': {'text': f'Technology Areas for {funding_mechanism_types[i]}'}}]))
+
+technology_order = technology_types
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.15, yanchor='top')],
+                  xaxis_title='Technology Area', yaxis_title='Total Number of Projects in Technology Area', title=f'Technology Areas for {funding_mechanism_types[0]}', hovermode='x unified',
+                  yaxis=dict(categoryorder='array', categoryarray=technology_order, automargin=True))
 fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
 st.write(fig)
