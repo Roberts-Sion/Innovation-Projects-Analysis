@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 st.title("Initial Analysis")
 
 #Import the datafile
-data = pd.read_excel('snp_dataset_useful.xlsx')
+data = pd.read_excel('snp_dataset_alls.xlsx')
 #Extract the required data from the datafile
 #Time
 start_date = data['Project Start Date']
