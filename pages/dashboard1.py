@@ -264,5 +264,3 @@ for i, sc in enumerate(sector_types):
 fig5.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
 st.plotly_chart(fig5, use_container_width=True)
-
-st.write("Last updated 15:02, 01/10/2026")
