@@ -154,7 +154,7 @@ for i, sc in enumerate(sector_types):
 
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
-st.plotly_chart(fig, use_container_width=True)
+st.write(fig)
 
 st.subheader("Plot of technology types for each strategy theme")
 #Create plots that display the technologies funded in each sector
@@ -191,7 +191,7 @@ for i in range(1, len(strategy_types)):
   buttons.append(dict(label=f'{strategy_types[i]}', method='update', args=[{'visible': visible}, {'title':{'text': f'Cumulative Number of Projects for {strategy_types[i]}'}}]))
 
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.1, yanchor='top')],
-                  xaxis_title='Technology', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
+                  xaxis_title='Technology', yaxis_title='Number of Projects', title=f'Cumulative Number of Projects for {strategy_types[0]}', hovermode='x unified')
 fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
@@ -312,11 +312,11 @@ for i in range(1, len(sector_types)):
   fig.add_trace(go.Bar(x=bts_research_types[i], y=bts_research_4_sect_type[i], name=f'{sector_types[i]}', visible=False))
 
 buttons = []
-buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title': {'text': f'Research Areas for ({sector_types[0]})'}}]))
+buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title': {'text': f'Research Areas for {sector_types[0]}'}}]))
 for i in range(1, len(sector_types)):
   visible = [False] * (len(sector_types))
   visible[i] = True
-  buttons.append(dict(label=f'{sector_types[i]}', method='update', args=[{'visible': visible}, {'title': {'text': f'Research Areas for ({sector_types[i]})'}}]))
+  buttons.append(dict(label=f'{sector_types[i]}', method='update', args=[{'visible': visible}, {'title': {'text': f'Research Areas for {sector_types[i]}'}}]))
 
 research_order = research_types
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.15, yanchor='top')],
