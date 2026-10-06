@@ -60,6 +60,15 @@ technology_types = ['Active Network Management','Asset Management', 'Biomethane'
 technology_types = [tt for tt in technology_types if pd.notna(tt)]
 technology_types_idx = [technology[technology.str.contains(tt, na=False)].index.tolist() for tt in technology_types]
 
+#Do the same for research as well
+research_types = ['ED - Customer and stakeholder focus', 'ED - Network improvements and system operability', 'ED - New technologies and commercial evolution',\
+                  'ED - Safety, health and environment', 'ED - Transition to low carbon future', 'ET - Customer and stakeholder focus', 'ET - Network improvements and system operability',\
+                  'ET - New technologies and commercial evolution', 'ET - Transition to low carbon future', 'GD - Environment and low carbon', 'GD - Future of gas', 'GD - Mains Replacement',\
+                  'GD - Reliability and maintenance', 'GD - Repair', 'GD - Safety and emergency', 'GD - Security', 'GT - Environment and low carbon', 'GT - Future of gas', 'GT - Mains Replacement',\
+                  'GT - Reliability and maintenance', 'GT - Repair', 'GT - Safety and emergency', 'Others']
+research_types = [rt for rt in research_types if pd.notna(rt)]
+research_types_idx = [research[research.str.contains(rt, na=False)].index.tolist() for rt in research_types]
+
 st.subheader("Plot of Total Project Budgets vs Sector (use as test)")
 st.write("(Description of plot to be included here)")
 total_sector_budget = np.zeros(len(sector_types))
@@ -104,6 +113,48 @@ all_sector_budget = (pd.DataFrame({'sector': sector, 'budget': budget})).dropna(
 
 fig = px.bar(x=all_sector_budget.index, y=all_sector_budget.values, labels={'x':'Sector', 'y':'Total Funding (£)'})
 st.write(fig)
+
+st.subheader('(Other test plot)')
+st.write("(Description of plot to be included here)")
+start_dt_sort = np.sort(start_dt)
+total_cumul = [np.sum(start_dt_sort <= date) for date in start_dt_sort]
+end = 0
+while end == 0:
+  remove = total_cumul.pop()
+  end = remove
+  if end == 0:
+    continue
+  else:  
+    total_cumul.append(remove)
+sector_cumul = {}
+for sc in sector_types:
+  sector_idx = sector[sector.str.contains(sc, na=False)].index
+  sector_dates = start_dt.loc[sector_idx]
+  sector_cumul[sc] = [np.sum(sector_dates.values <= date) for date in start_dt_sort]
+  end = 0
+  while end == 0:
+    remove = sector_cumul[sc].pop()
+    end = remove
+    if end == 0:
+      continue
+    else:  
+      sector_cumul[sc].append(remove)
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=start_dt_sort, y=total_cumul, mode='lines+markers', name='Total'))
+for sc in sector_types:
+  fig.add_trace(go.Scatter(x=start_dt_sort, y=sector_cumul[sc], mode='lines+markers', name=sc, visible=False))
+
+buttons = []
+buttons.append(dict(label='Total', method='update', args=[{'visible': [True] + [False]*len(sector_types)}, {'title': 'Cumulative Number of All Projects'}]))
+for i, sc in enumerate(sector_types):
+  visible = [False] * (len(sector_types) + 1)
+  visible[i+1] = True
+  buttons.append(dict(label=sc, method='update', args=[{'visible': visible}, {'title': f'Cumulative Number of {sc} Projects'}]))
+
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
+                  xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
+st.plotly_chart(fig, use_container_width=True)
 
 st.subheader("Plot of technology types for each strategy theme")
 #Create plots that display the technologies funded in each sector
@@ -157,12 +208,12 @@ for i in range(len(sector_types)):
   bts_technology_types.append(non_zero_counts.index)
   bts_tech_4_sect_type.append(non_zero_counts)
 
-fig1 = make_subplots(rows=len(sector_types), cols=1, subplot_titles=sector_types)
+fig = make_subplots(rows=len(sector_types), cols=1, subplot_titles=sector_types)
 for i in range(len(sector_types)):
-  fig1.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_sect_type[i].values), row=i+1, col=1)
-fig1.update_layout(height=1000, width=1350, showlegend=False)
-fig1.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
-st.write(fig1)
+  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_sect_type[i].values), row=i+1, col=1)
+fig.update_layout(height=1000, width=1350, showlegend=False)
+fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
+st.write(fig)
 
 st.subheader("Plot of Total Project Budgets vs Owner (use as test)")
 st.write("(Description of plot to be included here)")
@@ -173,8 +224,8 @@ for i in range(len(owner_types)):
 bts_total_owner_budget_idx = np.argsort(total_owner_budget)[::-1]
 bts_total_owner_budget = total_owner_budget[bts_total_owner_budget_idx]
 bts_owner_types = np.array(owner_types)[bts_total_owner_budget_idx]
-fig2 = px.bar(x=bts_owner_types, y=bts_total_owner_budget, labels={'x':'Owner', 'y':'Total Funding (£)'})
-st.write(fig2)
+fig = px.bar(x=bts_owner_types, y=bts_total_owner_budget, labels={'x':'Owner', 'y':'Total Funding (£)'})
+st.write(fig)
 
 #Create a plot to see when each technology has been invested in
 tech_4_owner = []
@@ -188,10 +239,10 @@ for i in range(len(owner_types)):
   tech_4_owner.append(current_owner_tech)
   tech_4_owner_start_dt.append(current_owner_start_dt)
 
-fig3 = go.Figure()
-fig3.add_trace(go.Scatter(x=tech_4_owner_start_dt[0], y=tech_4_owner[0], mode='markers', name=f'{owner_types[0]}'))
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=tech_4_owner_start_dt[0], y=tech_4_owner[0], mode='markers', name=f'{owner_types[0]}'))
 for i in range(len(owner_types)-1):
-  fig3.add_trace(go.Scatter(x=tech_4_owner_start_dt[i+1], y=tech_4_owner[i+1], mode='markers', name=f'{owner_types[i+1]}', visible=False))
+  fig.add_trace(go.Scatter(x=tech_4_owner_start_dt[i+1], y=tech_4_owner[i+1], mode='markers', name=f'{owner_types[i+1]}', visible=False))
 
 buttons = []
 buttons.append(dict(label=f'{owner_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(owner_types) - 1)}, {'title': f'Technology Area funded by date ({owner_types[0]})'}]))
@@ -201,11 +252,11 @@ for i in range(1, len(owner_types)):
   buttons.append(dict(label=f'{owner_types[i]}', method='update', args=[{'visible': visible}, {'title': {'text': f'Technology Area funded by date ({owner_types[i]})'}}]))
 
 technology_order = technology_types
-fig3.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.02, yanchor='top')],\
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.02, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Technology Area', title=f'Technology Area funded by date ({owner_types[0]})', hovermode='x unified',\
                   yaxis=dict(categoryorder='array', categoryarray=technology_order))
-fig3.update_layout(width=1400, height=1200)
-st.write(fig3)
+fig.update_layout(width=1400, height=1200)
+st.write(fig)
 
 st.subheader("Plot of Total Project Budgets vs Technology (use as test)")
 st.write("(Description of plot to be included here)")
@@ -218,49 +269,48 @@ bts_total_technology_budget_idx = np.argsort(total_technology_budget)[::-1]
 bts_total_technology_budget = total_technology_budget[bts_total_technology_budget_idx]
 bts_technology_types = np.array(technology_types)[bts_total_technology_budget_idx]
 
-fig4 = px.bar(x=bts_technology_types, y=bts_total_technology_budget, labels={'x':'Technology', 'y':'Total Funding (£)'})
-fig4.update_layout(width=1500, height=600)
-fig4.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
-st.write(fig4)
+fig = px.bar(x=bts_technology_types, y=bts_total_technology_budget, labels={'x':'Technology', 'y':'Total Funding (£)'})
+fig.update_layout(width=1500, height=600)
+fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
+st.write(fig)
 
-st.subheader('(Other test plot)')
-st.write("(Description of plot to be included here)")
-start_dt_sort = np.sort(start_dt)
-total_cumul = [np.sum(start_dt_sort <= date) for date in start_dt_sort]
-end = 0
-while end == 0:
-  remove = total_cumul.pop()
-  end = remove
-  if end == 0:
-    continue
-  else:  
-    total_cumul.append(remove)
-sector_cumul = {}
-for sc in sector_types:
-  sector_idx = sector[sector.str.contains(sc, na=False)].index
-  sector_dates = start_dt.loc[sector_idx]
-  sector_cumul[sc] = [np.sum(sector_dates.values <= date) for date in start_dt_sort]
-  end = 0
-  while end == 0:
-    remove = sector_cumul[sc].pop()
-    end = remove
-    if end == 0:
-      continue
-    else:  
-      sector_cumul[sc].append(remove)
+#Split all projects by sector, then analyse the research areas they target
+research_4_sect = []
+for i in range(len(sector_types)):
+  filtered_research = research[sector_types_idx[i]].dropna()
+  filtered_research = filtered_research.str.split(', ').explode().str.strip()
+  research_4_sect.append(filtered_research)
 
-fig5 = go.Figure()
-fig5.add_trace(go.Scatter(x=start_dt_sort, y=total_cumul, mode='lines+markers', name='Total'))
-for sc in sector_types:
-  fig5.add_trace(go.Scatter(x=start_dt_sort, y=sector_cumul[sc], mode='lines+markers', name=sc, visible=False))
+research_4_sect_type = []
+for i in range(len(sector_types)):
+  counts = research_4_sect[i].value_counts()
+  counts = counts.reindex(research_types, fill_value=0)
+  research_4_sect_type.append(counts)
+
+bts_research_4_sect_type = []
+bts_research_types = []
+for i in range(len(sector_types)):
+  counts = research_4_sect_type[i].sort_values(ascending=False)
+  non_zero_counts = counts[counts > 0]
+  bts_research_types.append(non_zero_counts.index)
+  bts_research_4_sect_type.append(non_zero_counts)
+
+fig = go.Figure()
+fig.add_trace(go.Bar(x=bts_research_types[0], y=bts_research_4_sect_type[0], name=f'{sector_types[0]}'))
+for i in range(1, len(sector_types)):
+  fig.add_trace(go.Bar(x=bts_research_types[i], y=bts_research_4_sect_type[i], name=f'{sector_types[i]}', visible=False))
 
 buttons = []
-buttons.append(dict(label='Total', method='update', args=[{'visible': [True] + [False]*len(sector_types)}, {'title': 'Cumulative Number of All Projects'}]))
-for i, sc in enumerate(sector_types):
-  visible = [False] * (len(sector_types) + 1)
-  visible[i+1] = True
-  buttons.append(dict(label=sc, method='update', args=[{'visible': visible}, {'title': f'Cumulative Number of {sc} Projects'}]))
+buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title': f'Research Areas for ({sector_types[0]})'}]))
+for i in range(1, len(sector_types)):
+  visible = [False] * (len(sector_types))
+  visible[i] = True
+  buttons.append(dict(label=f'{sector_types[i]}', method='update', args=[{'visible': visible}, {'title': {'text': f'Research Areas for ({sector_types[i]})'}}]))
 
-fig5.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
-                  xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
-st.plotly_chart(fig5, use_container_width=True)
+research_order = research_types
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.15, yanchor='top')],
+                  xaxis_title='Research Area', yaxis_title='Total Number of Projects in Research Area', title=f'Research Areas for ({sector_types[0]})', hovermode='x unified',
+                  yaxis=dict(categoryorder='array', categoryarray=research_order, automargin=True))
+fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
+fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
+st.write(fig)
