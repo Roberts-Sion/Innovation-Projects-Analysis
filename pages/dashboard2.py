@@ -144,13 +144,14 @@ bts_total_useful_tech_budget = total_useful_tech_budget[bts_total_useful_tech_bu
 bts_useful_tech_types_4_budget = np.array(useful_tech_types)[bts_total_useful_tech_budget_idx]
 bts_useful_tech_sif_funding = np.array(total_useful_tech_sif_funding)[bts_total_useful_tech_budget_idx]
 
-fig = make_subplots(rows=2, cols=1, subplot_titles=('Total Funding', 'SIF Funding'))
+fig = make_subplots(rows=3, cols=1, subplot_titles=('Bar Chart', 'Scatter Diagram', 'Differences'))
 fig.add_trace(go.Bar(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_budget, name=f'Total Budget (£{TOTAL_useful_tech_budget:,.2f})', showlegend=True), row=1, col=1)
 fig.add_trace(go.Bar(x=bts_useful_tech_types_4_budget, y=bts_useful_tech_sif_funding, name=f'Total SIF Funding (£{TOTAL_useful_tech_sif_funding:,.2f})', showlegend=True), row=1, col=1)
 fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_budget, mode='markers+lines', showlegend=False), row=2, col=1)
 fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_useful_tech_sif_funding, mode='markers+lines', showlegend=False), row=2, col=1)
+fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_budget - bts_useful_tech_sif_funding, mode='markers', name='Difference (£)', showlegend=True), row=3, col=1)
 fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
 fig.update_xaxes(title_text='Technology')
 fig.update_yaxes(title_text='Total Funding (£)')
-fig.update_layout(height=1000, width=1400, legend=dict(yanchor='top', y=0.99, xanchor='right', x=0.99))
+fig.update_layout(height=1500, width=1400, legend=dict(yanchor='top', y=0.99, xanchor='right', x=0.99))
 st.write(fig)
