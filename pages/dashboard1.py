@@ -219,11 +219,22 @@ for i in range(len(sector_types)):
   bts_technology_types.append(non_zero_counts.index)
   bts_tech_4_sect_type.append(non_zero_counts)
 
-fig = make_subplots(rows=len(sector_types), cols=1, subplot_titles=sector_types)
-for i in range(len(sector_types)):
-  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_sect_type[i].values), row=i+1, col=1)
-fig.update_layout(height=1000, width=1350, showlegend=False)
-fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
+fig = go.Figure()
+fig.add_trace(go.Bar(x=bts_technology_types[0], y=bts_tech_4_sect_type[0].values, name=f'{sector_types[0]}'))
+for i in range(1, len(sector_types)):
+  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_sect_type[i].values, name=f'{sector_types[i]}', visible=False))
+
+buttons = []
+buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title':{'text': f'Cumulative Number of Projects for {sector_types[0]}'}}]))
+for i in range(1, len(sector_types)):
+  visible = [False] * (len(sector_types))
+  visible[i] = True
+  buttons.append(dict(label=f'{sector_types[i]}', method='update', args=[{'visible': visible}, {'title':{'text': f'Cumulative Number of Projects for {sector_types[i]}'}}]))
+
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.1, yanchor='top')],
+                  xaxis_title='Technology', yaxis_title='Number of Projects', title=f'Cumulative Number of Projects for {sector_types[0]}', hovermode='x unified')
+fig.update_layout(width=1400, height=600)
+fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
 
 st.subheader("Plot of Total Project Budgets vs Owner (use as test)")
@@ -320,7 +331,7 @@ for i in range(1, len(sector_types)):
 
 research_order = research_types
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.15, yanchor='top')],
-                  xaxis_title='Research Area', yaxis_title='Total Number of Projects in Research Area', title=f'Research Areas for ({sector_types[0]})', hovermode='x unified',
+                  xaxis_title='Research Area', yaxis_title='Total Number of Projects in Research Area', title=f'Research Areas for {sector_types[0]}', hovermode='x unified',
                   yaxis=dict(categoryorder='array', categoryarray=research_order, automargin=True))
 fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
