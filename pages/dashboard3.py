@@ -135,3 +135,48 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
+
+#Create a similar plot where dates on x-axis, tech on y-axis, and marker size corresponds to number of projects at date
+tech_4_int_strat = []
+tech_4_int_strat_start_dt = []
+tech_4_int_strat_count = []
+tech_4_int_strat_present = []
+for i in range(len(interest_strategy_types)):
+  current_int_strat_idx = interest_strategy_types_idx[i]
+  current_int_strat_tech = technology[current_int_strat_idx].dropna()
+  current_int_strat_tech = current_int_strat_tech.str.split(', ').explode().str.strip()
+  current_int_strat_tech = current_int_strat_tech[current_int_strat_tech.isin(technology_types)]
+  current_owner_start_dt = start_dt.loc[current_int_strat_tech.index]
+  df = pd.DataFrame({'technology': current_int_strat_tech.values, 'start_dt': current_owner_start_dt.values})
+  df = (df.groupby(['start_dt', 'technology']).size().reset_index(name='count'))
+  df = df.sort_values(by='start_dt')
+  tech_4_int_strat.append(df['technology'])
+  tech_4_int_strat_start_dt.append(df['start_dt'])
+  tech_4_int_strat_count.append(df['count'])
+  tech_4_int_strat_present.append(df['technology'].unique())
+
+colours = (px.colors.qualitative.Plotly + px.colors.qualitative.D3 + px.colors.qualitative.Set3)
+technology_colours = {tech: colours[i % len(colours)] for i, tech in enumerate(technology_types)}
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=tech_4_int_strat_start_dt[0], y=tech_4_int_strat[0], mode='markers', marker=dict(size=tech_4_int_strat_count[0]*6+5, color=[technology_colours[tech] for tech in tech_4_int_strat[0]]),\
+                         customdata=tech_4_int_strat_count[0], hovertemplate=('Date: %{x}<br>' 'Technology: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{interest_strategy_types[0]}'))
+for i in range(len(interest_strategy_types)-1):
+  fig.add_trace(go.Scatter(x=tech_4_int_strat_start_dt[i+1], y=tech_4_int_strat[i+1], mode='markers', marker=dict(size=tech_4_int_strat_count[i+1]*6+5, color=[technology_colours[tech] for tech in tech_4_int_strat[i+1]]),\
+                           customdata=tech_4_int_strat_count[i+1], hovertemplate=('Date: %{x}<br>' 'Technology: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{interest_strategy_types[i+1]}', visible=False))
+
+buttons = []
+buttons.append(dict(label=f'{interest_strategy_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(interest_strategy_types) - 1)},\
+                                                                      {'title': {'text':f'Technology Area funded by date ({interest_strategy_types[0]})'}}]))
+for i in range(1, len(interest_strategy_types)):
+  visible = [False] * (len(interest_strategy_types))
+  visible[i] = True
+  buttons.append(dict(label=f'{interest_strategy_types[i]}', method='update', args=[{'visible': visible},\
+                                                                        {'title': {'text': f'Technology Area funded by date ({interest_strategy_types[i]})'},\
+                                                                         'yaxis': {'categoryorder': 'array', 'categoryarray': tech_4_int_strat_present[i]}}]))
+
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.04, yanchor='top')],\
+                  xaxis_title='Date (DD-MM-YY)', yaxis_title='Technology Area', title=f'Technology Area funded by date ({interest_strategy_types[0]})', hovermode='closest',\
+                  yaxis=dict(categoryorder='array', categoryarray=tech_4_int_strat_present[0]))
+fig.update_layout(width=1400, height=1200)
+st.write(fig)
