@@ -5,6 +5,8 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 
+st.title("Initial Analysis")
+
 #Import the datafile
 data = pd.read_excel('snp_dataset_alls.xlsx')
 #Extract the required data from the datafile
@@ -58,6 +60,20 @@ technology_types = ['Active Network Management','Asset Management', 'Biomethane'
                     'Substations', 'System Security', 'Transformers', 'Voltage Control']
 technology_types = [tt for tt in technology_types if pd.notna(tt)]
 technology_types_idx = [technology[technology.str.contains(tt, na=False)].index.tolist() for tt in technology_types]
+
+#Do the same for research as well
+research_types = ['ED - Customer and stakeholder focus', 'ED - Network improvements and system operability', 'ED - New technologies and commercial evolution',\
+                  'ED - Safety, health and environment', 'ED - Transition to low carbon future', 'ET - Customer and stakeholder focus', 'ET - Network improvements and system operability',\
+                  'ET - New technologies and commercial evolution', 'ET - Transition to low carbon future', 'GD - Environment and low carbon', 'GD - Future of gas', 'GD - Mains Replacement',\
+                  'GD - Reliability and maintenance', 'GD - Repair', 'GD - Safety and emergency', 'GD - Security', 'GT - Environment and low carbon', 'GT - Future of gas', 'GT - Mains Replacement',\
+                  'GT - Reliability and maintenance', 'GT - Repair', 'GT - Safety and emergency', 'Others']
+research_types = [rt for rt in research_types if pd.notna(rt)]
+research_types_idx = [research[research.str.contains(rt, na=False)].index.tolist() for rt in research_types]
+
+#Do the same for funding mechanism as well
+funding_mechanism_types = funding_mechanism.unique()
+funding_mechanism_types = [ft for ft in funding_mechanism_types if pd.notna(ft)]
+funding_mechanism_types_idx = [funding_mechanism[funding_mechanism.str.contains(ft, na=False)].index.tolist() for ft in funding_mechanism_types]
 
 #Look to include all of this in a separate page on the website
 #Investigate the differences between total budget and SIF funding

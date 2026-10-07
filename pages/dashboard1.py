@@ -19,6 +19,7 @@ budget = data['Project Budget']
 owners = data['Owner Network']
 collaborators = data['Collaborating Networks']
 funding_mechanism = data['Funding Mechanism']
+sif_funding = data['SIF Funding Required']
 #Area of research
 titles = data['Project Title']
 strategy = data['Strategy Theme']
