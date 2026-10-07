@@ -281,8 +281,8 @@ fig = go.Figure()
 fig.add_trace(go.Scatter(x=tech_4_owner_start_dt[0], y=tech_4_owner[0], mode='markers', marker=dict(size=tech_4_owner_count[0]*6+5, color=[technology_colours[tech] for tech in tech_4_owner[0]]),\
                          customdata=tech_4_owner_count[0], hovertemplate=('Date: %{x}<br>' 'Technology: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{owner_types[0]}'))
 for i in range(len(owner_types)-1):
-  fig.add_trace(go.Scatter(x=tech_4_owner_start_dt[i+1], y=tech_4_owner[i+1], mode='markers', marker=dict(size=tech_4_owner_count[0]*6+5, color=[technology_colours[tech] for tech in tech_4_owner[i]]),\
-                           customdata=tech_4_owner_count[i], hovertemplate=('Date: %{x}<br>' 'Technology: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{owner_types[i+1]}', visible=False))
+  fig.add_trace(go.Scatter(x=tech_4_owner_start_dt[i+1], y=tech_4_owner[i+1], mode='markers', marker=dict(size=tech_4_owner_count[i+1]*6+5, color=[technology_colours[tech] for tech in tech_4_owner[i+1]]),\
+                           customdata=tech_4_owner_count[i+1], hovertemplate=('Date: %{x}<br>' 'Technology: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{owner_types[i+1]}', visible=False))
 
 buttons = []
 buttons.append(dict(label=f'{owner_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(owner_types) - 1)}, {'title': f'Technology Area funded by date ({owner_types[0]})'}]))
