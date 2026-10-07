@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 
 st.title("Analysis of Projects that have received SIF Funding")
 st.write("This page is dedicated to...")
+st.divider()
 
 #Import the datafile
 data = pd.read_excel('snp_dataset_alls.xlsx')
@@ -122,6 +123,7 @@ fig.update_xaxes(range=[0, 4.5e7])
 fig.update_yaxes(range=[0, 4.5e7])
 fig.update_layout(height=600, width=1200, xaxis_title='Total Funding (£)', yaxis_title='SIF Funding Required (£)')
 st.write(fig)
+st.divider()
 
 #Determine dates when projects received funding, looking at the cumulative number to receive across time
 st.subheader("Give plot a title")
@@ -132,6 +134,7 @@ fig = go.Figure()
 fig.add_trace(go.Scatter(x=useful_start_dt_sort, y=total_cumul, mode='markers+lines', showlegend=False))
 fig.update_layout(height=600, width=1200, xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects')
 st.write(fig)
+st.divider()
 
 #Determine what technologies have received investment from this innovation fund
 st.subheader("Give plot a title")
@@ -143,6 +146,7 @@ fig.add_trace(go.Bar(x=bts_useful_tech_types, y=bts_useful_tech_types_count, sho
 fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
 fig.update_layout(height=600, width=1200, xaxis_title='Technology', yaxis_title='Number of Projects')
 st.write(fig)
+st.divider()
 
 #Compare the difference in budget and funding across technologies
 st.subheader("Give plot a title")
@@ -169,6 +173,7 @@ fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_useful_tech_sif
 fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_budget - bts_useful_tech_sif_funding, mode='markers', name='Difference (£)', showlegend=False), row=3, col=1)
 fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
 fig.update_xaxes(title_text='Technology')
-fig.update_yaxes(title_text='Total Funding (£)')
+fig.update_yaxes(title_text='Total (£)')
+fig.update_yaxes(title_text='Difference in totals (£)', row=3, col=1)
 fig.update_layout(height=1500, width=1400, legend=dict(yanchor='top', y=0.99, xanchor='right', x=0.99))
-st.write(fig)
+st.divider()

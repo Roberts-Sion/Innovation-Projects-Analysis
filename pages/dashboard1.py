@@ -112,6 +112,7 @@ if st.session_state.selected_sector is not None:
   if st.button("Hide Table", key="hide_table"):
     st.session_state.selected_sector = None
     st.rerun()
+st.divider()
 
 st.subheader("Plot of Total Project Budgets vs Sector, no double counting (use as test)")
 #Plot of total project budgets vs sector, where there is no double counting
@@ -123,6 +124,7 @@ all_sector_budget = (pd.DataFrame({'sector': sector, 'budget': budget})).dropna(
 
 fig = px.bar(x=all_sector_budget.index, y=all_sector_budget.values, labels={'x':'Sector', 'y':'Total Funding (£)'})
 st.write(fig)
+st.divider()
 
 st.subheader('(Other test plot)')
 st.write("(Description of plot to be included here)")
@@ -165,6 +167,7 @@ for i, sc in enumerate(sector_types):
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
 st.write(fig)
+st.divider()
 
 st.subheader("Plot of technology types for each strategy theme")
 #Create plots that display the technologies funded in each sector
@@ -205,6 +208,7 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
+st.divider()
 
 st.subheader("Plot of Count vs Technology Area (for each sector - use as test)")
 st.write("(Description of plot to be included here)")
@@ -246,6 +250,7 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
+st.divider()
 
 st.subheader("Plot of Total Project Budgets vs Owner (use as test)")
 st.write("(Description of plot to be included here)")
@@ -261,6 +266,7 @@ fig = px.bar(x=bts_owner_types, y=bts_total_owner_budget, labels={'x':'Owner', '
 fig.update_traces(name=f'Total Budget (£{TOTAL_owner_budget:,.2f})', showlegend=True)
 fig.update_layout(legend=dict(yanchor='top', y=0.99, xanchor='right', x=0.99))
 st.write(fig)
+st.divider()
 
 #Create a plot to see when each technology has been invested in
 tech_4_owner = []
@@ -306,6 +312,7 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
                   yaxis=dict(categoryorder='array', categoryarray=tech_4_owner_present[0]))
 fig.update_layout(width=1400, height=1000)
 st.write(fig)
+st.divider()
 
 st.subheader("Plot of Total Project Budgets vs Technology (use as test)")
 st.write("(Description of plot to be included here)")
@@ -322,6 +329,7 @@ fig = px.bar(x=bts_technology_types, y=bts_total_technology_budget, labels={'x':
 fig.update_layout(width=1500, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
 st.write(fig)
+st.divider()
 
 #Split all projects by sector, then analyse the research areas they target
 research_4_sect = []
@@ -363,6 +371,7 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
 st.write(fig)
+st.divider()
 
 st.subheader("Plot title here")
 #Plot funding mechanisms vs dates, to verify they change as stated
@@ -379,6 +388,7 @@ fig = go.Figure()
 fig.add_trace(go.Scatter(x=chron_start_dt_4_fundmech, y=fundmech_4_chron_start_dt, mode='markers', showlegend=False))
 fig.update_layout(height=600, width=1200, xaxis_title='Date (DD-MM-YY)', yaxis_title='Funding Mechanism')
 st.write(fig)
+st.divider()
 
 st.subheader("Plot title here")
 #Plot funding mechanism vs technology
@@ -421,3 +431,4 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
 st.write(fig)
+st.divider()

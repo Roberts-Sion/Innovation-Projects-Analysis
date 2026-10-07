@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 
 st.title("Analysis of...")
 st.write("This page is dedicated to...")
+st.divider()
 
 #Import the datafile
 data = pd.read_excel('snp_dataset_alls.xlsx')
@@ -97,6 +98,7 @@ fig = px.bar(x=bts_interest_strategy_types, y=bts_total_interest_strategy_budget
 fig.update_traces(name=f'Total Budget (£{TOTAL_interest_strategy_budget:,.2f})', showlegend=True)
 fig.update_layout(legend=dict(yanchor='top', y=0.99, xanchor='right', x=0.99))
 st.write(fig)
+st.divider()
 
 #Determine the number of projects of each technology has received funding for each strategy theme
 tech_4_int_strat = []
@@ -136,6 +138,7 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
+st.divider()
 
 #Create a similar plot where dates on x-axis, tech on y-axis, and marker size corresponds to number of projects at date
 tech_4_int_strat = []
@@ -181,3 +184,4 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
                   yaxis=dict(categoryorder='array', categoryarray=tech_4_int_strat_present[0]))
 fig.update_layout(width=1400, height=1200)
 st.write(fig)
+st.divider()
