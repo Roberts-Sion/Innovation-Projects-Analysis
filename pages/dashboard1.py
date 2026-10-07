@@ -261,6 +261,7 @@ st.write(fig)
 tech_4_owner = []
 tech_4_owner_start_dt = []
 tech_4_owner_count = []
+tech_4_owner_present = []
 for i in range(len(owner_types)):
   current_owner_idx = owner_types_idx[i]
   current_owner_tech = technology[current_owner_idx].dropna()
@@ -273,6 +274,7 @@ for i in range(len(owner_types)):
   tech_4_owner.append(df['technology'])
   tech_4_owner_start_dt.append(df['start_dt'])
   tech_4_owner_count.append(df['count'])
+  tech_4_owner_present.append(df['technology'].unique())
 
 colours = (px.colors.qualitative.Plotly + px.colors.qualitative.D3 + px.colors.qualitative.Set3)
 technology_colours = {tech: colours[i % len(colours)] for i, tech in enumerate(technology_types)}
@@ -285,17 +287,19 @@ for i in range(len(owner_types)-1):
                            customdata=tech_4_owner_count[i+1], hovertemplate=('Date: %{x}<br>' 'Technology: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{owner_types[i+1]}', visible=False))
 
 buttons = []
-buttons.append(dict(label=f'{owner_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(owner_types) - 1)}, {'title': f'Technology Area funded by date ({owner_types[0]})'}]))
+buttons.append(dict(label=f'{owner_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(owner_types) - 1)},\
+                                                                      {'title': {'text':f'Technology Area funded by date ({owner_types[0]})'}}]))
 for i in range(1, len(owner_types)):
   visible = [False] * (len(owner_types))
   visible[i] = True
-  buttons.append(dict(label=f'{owner_types[i]}', method='update', args=[{'visible': visible}, {'title': {'text': f'Technology Area funded by date ({owner_types[i]})'}}]))
+  buttons.append(dict(label=f'{owner_types[i]}', method='update', args=[{'visible': visible},\
+                                                                        {'title': {'text': f'Technology Area funded by date ({owner_types[i]})'},\
+                                                                         'yaxis': {'categoryorder': 'array', 'categoryarray': tech_4_owner_present[i]}}]))
 
-technology_order = technology_types
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.04, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Technology Area', title=f'Technology Area funded by date ({owner_types[0]})', hovermode='closest',\
-                  yaxis=dict(categoryorder='array', categoryarray=technology_order))
-fig.update_layout(width=1400, height=1200)
+                  yaxis=dict(categoryorder='array', categoryarray=tech_4_owner_present[0]))
+fig.update_layout(width=1400, height=1000)
 st.write(fig)
 
 st.subheader("Plot of Total Project Budgets vs Technology (use as test)")
