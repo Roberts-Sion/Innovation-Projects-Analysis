@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 
+st.set_page_config(layout='wide')
 st.title("Analysis of...")
 st.write("This page is dedicated to...")
 st.divider()

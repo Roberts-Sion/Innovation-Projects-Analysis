@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 
+st.set_page_config(layout='wide')
 st.title("Key Analysis")
 st.write("This page is dedicated to the analysis of the primary data included in the Smarter Networks Portal, where\
          these have been determined to be those included in the 'Filters' menu on the [Innovation Projects](https://smarter.energynetworks.org/search-results/?dateType=start&query&sort=)\" \
@@ -221,7 +222,7 @@ fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
 container = st.container()
-container.write("Write description here.")
+container.write("")
 st.divider()
 
 st.subheader("Plot of Count vs Technology Area (for each sector - use as test)")

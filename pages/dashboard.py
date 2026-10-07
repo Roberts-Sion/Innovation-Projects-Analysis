@@ -1,5 +1,6 @@
 import streamlit as st
 
+st.set_page_config(layout='wide')
 st.title("Analysis of Ofgem Innovation Projects")
 st.write("This analysis provides insight into previous and current Innovation Projects funded by Ofgem.\
          Data regarding these projects, accessed using Energy Networks Association's Smarter Networks Portal,\
