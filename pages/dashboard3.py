@@ -5,7 +5,8 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 
-st.title("Personal Research Analysis")
+st.title("Analysis of...")
+st.write("This page is dedicated to...")
 
 #Import the datafile
 data = pd.read_excel('snp_dataset_alls.xlsx')

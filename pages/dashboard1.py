@@ -5,7 +5,11 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 
-st.title("Initial Analysis")
+st.title("Key Analysis")
+st.write("This page is dedicated to the analysis of the primary data included in the Smarter Networks Portal, where\
+         these have been determined to be those included in the 'Filters' menu on the [Innovation Projects](https://smarter.energynetworks.org/search-results/?dateType=start&query&sort=)\" \
+         webpage. A series of varied plots are included below, with a description attached to each one.")
+st.divider()
 
 #Import the datafile
 data = pd.read_excel('snp_dataset_alls.xlsx')
