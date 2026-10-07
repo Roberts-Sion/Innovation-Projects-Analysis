@@ -182,6 +182,52 @@ container.write("This plot displays the cumulative number of projects to be fund
                 allows for the plot to be altered to be across all sectors, or for individual sectors.")
 st.divider()
 
+st.subheader("Plot of number of Projects funded for each Technology type, for a given Lead Sector")
+#Create plots that display the technologies funded in each sector
+tech_4_sect = []
+for i in range(len(sector_types)):
+  filtered_tech = technology[sector_types_idx[i]].dropna()
+  filtered_tech = filtered_tech.str.split(', ').explode().str.strip()
+  tech_4_sect.append(filtered_tech)
+
+tech_4_sect_type = []
+for i in range(len(sector_types)):
+  counts = tech_4_sect[i].value_counts()
+  counts = counts.reindex(technology_types, fill_value=0)
+  tech_4_sect_type.append(counts)
+
+bts_tech_4_sect_type = []
+bts_technology_types = []
+for i in range(len(sector_types)):
+  counts = tech_4_sect_type[i].sort_values(ascending=False)
+  non_zero_counts = counts[counts > 0]
+  bts_technology_types.append(non_zero_counts.index)
+  bts_tech_4_sect_type.append(non_zero_counts)
+
+fig = go.Figure()
+fig.add_trace(go.Bar(x=bts_technology_types[0], y=bts_tech_4_sect_type[0].values, name=f'{sector_types[0]}'))
+for i in range(1, len(sector_types)):
+  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_sect_type[i].values, name=f'{sector_types[i]}', visible=False))
+
+buttons = []
+buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title':{'text': f'Cumulative Number of Projects for {sector_types[0]}'}}]))
+for i in range(1, len(sector_types)):
+  visible = [False] * (len(sector_types))
+  visible[i] = True
+  buttons.append(dict(label=f'{sector_types[i]}', method='update', args=[{'visible': visible}, {'title':{'text': f'Cumulative Number of Projects for {sector_types[i]}'}}]))
+
+fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.1, yanchor='top')],
+                  xaxis_title='Technology', yaxis_title='Number of Projects', title=f'Cumulative Number of Projects for {sector_types[0]}', hovermode='x unified')
+fig.update_layout(width=1400, height=600)
+fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
+st.write(fig)
+container = st.container()
+container.write("This plot displays the total count of a given technology area funded, for a given sector. Insight can\
+                be drawn on the technology areas usually associated with each sector, but the plot is limited to not\
+                being able to explain clearly what individual projects involve. The future addition of a table may prove\
+                useful in avoiding this issue.")
+st.divider()
+
 st.subheader("Plot of number of Projects funded for each Technology type, for a given Strategy theme")
 #Create plots that display the technologies funded in each strategy theme
 tech_4_strat = []
@@ -222,49 +268,10 @@ fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
 container = st.container()
-container.write("")
-st.divider()
-
-st.subheader("Plot of Count vs Technology Area (for each sector - use as test)")
-st.write("(Description of plot to be included here)")
-#Create plots that display the technologies funded in each sector
-tech_4_sect = []
-for i in range(len(sector_types)):
-  filtered_tech = technology[sector_types_idx[i]].dropna()
-  filtered_tech = filtered_tech.str.split(', ').explode().str.strip()
-  tech_4_sect.append(filtered_tech)
-
-tech_4_sect_type = []
-for i in range(len(sector_types)):
-  counts = tech_4_sect[i].value_counts()
-  counts = counts.reindex(technology_types, fill_value=0)
-  tech_4_sect_type.append(counts)
-
-bts_tech_4_sect_type = []
-bts_technology_types = []
-for i in range(len(sector_types)):
-  counts = tech_4_sect_type[i].sort_values(ascending=False)
-  non_zero_counts = counts[counts > 0]
-  bts_technology_types.append(non_zero_counts.index)
-  bts_tech_4_sect_type.append(non_zero_counts)
-
-fig = go.Figure()
-fig.add_trace(go.Bar(x=bts_technology_types[0], y=bts_tech_4_sect_type[0].values, name=f'{sector_types[0]}'))
-for i in range(1, len(sector_types)):
-  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_sect_type[i].values, name=f'{sector_types[i]}', visible=False))
-
-buttons = []
-buttons.append(dict(label=f'{sector_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(sector_types) - 1)}, {'title':{'text': f'Cumulative Number of Projects for {sector_types[0]}'}}]))
-for i in range(1, len(sector_types)):
-  visible = [False] * (len(sector_types))
-  visible[i] = True
-  buttons.append(dict(label=f'{sector_types[i]}', method='update', args=[{'visible': visible}, {'title':{'text': f'Cumulative Number of Projects for {sector_types[i]}'}}]))
-
-fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.1, yanchor='top')],
-                  xaxis_title='Technology', yaxis_title='Number of Projects', title=f'Cumulative Number of Projects for {sector_types[0]}', hovermode='x unified')
-fig.update_layout(width=1400, height=600)
-fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
-st.write(fig)
+container.write("This plot displays the total count of a given technology area funded, for a given strategy theme. Insight can\
+                be drawn on the technology areas usually associated with each strategy theme, but the plot is limited to not\
+                being able to explain clearly what individual projects involve. The future addition of a table may prove\
+                useful in avoiding this issue.")
 st.divider()
 
 st.subheader("Plot of Total Project Budgets vs Owner (use as test)")
@@ -281,6 +288,8 @@ fig = px.bar(x=bts_owner_types, y=bts_total_owner_budget, labels={'x':'Owner', '
 fig.update_traces(name=f'Total Budget (£{TOTAL_owner_budget:,.2f})', showlegend=True)
 fig.update_layout(legend=dict(yanchor='top', y=0.99, xanchor='right', x=0.99))
 st.write(fig)
+container = st.container()
+container.write("This plot displays...")
 st.divider()
 
 #Create a plot to see when each technology has been invested in
@@ -327,6 +336,8 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
                   yaxis=dict(categoryorder='array', categoryarray=tech_4_owner_present[0]))
 fig.update_layout(width=1400, height=1000)
 st.write(fig)
+container = st.container()
+container.write("This plot displays...")
 st.divider()
 
 st.subheader("Plot of Total Project Budgets vs Technology (use as test)")
@@ -344,6 +355,8 @@ fig = px.bar(x=bts_technology_types, y=bts_total_technology_budget, labels={'x':
 fig.update_layout(width=1500, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
 st.write(fig)
+container = st.container()
+container.write("This plot displays...")
 st.divider()
 
 #Split all projects by sector, then analyse the research areas they target
@@ -386,23 +399,29 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
 st.write(fig)
+container = st.container()
+container.write("This plot displays...")
 st.divider()
 
 st.subheader("Plot title here")
 #Plot funding mechanisms vs dates, to verify they change as stated
-start_dt_4_fundmech = []
-for i, fundmech in enumerate(funding_mechanism):
-  if pd.notna(fundmech):
-    start_dt_4_fundmech.append(start_dt[i])
+start_dt_and_fundmech = pd.DataFrame({'start_dt': start_dt, 'funding_mechanism': funding_mechanism})
+start_dt_and_fundmech = start_dt_and_fundmech.dropna(subset=['funding_mechanism'])
+start_dt_and_fundmech = (start_dt_and_fundmech.groupby(['start_dt', 'funding_mechanism']).size().reset_index(name='count').sort_values('start_dt'))
 
-chron_start_dt_4_fundmech = np.sort(start_dt_4_fundmech)
-chron_start_dt_4_fundmech_idx = np.argsort(start_dt_4_fundmech)
-fundmech_4_chron_start_dt = np.array(funding_mechanism)[chron_start_dt_4_fundmech_idx]
+colours = (px.colors.qualitative.Plotly + px.colors.qualitative.D3 + px.colors.qualitative.Set3)
+funding_mechanism_colours = {fm: colours[i % len(colours)] for i, fm in enumerate(funding_mechanism_types)}
 
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=chron_start_dt_4_fundmech, y=fundmech_4_chron_start_dt, mode='markers', showlegend=False))
-fig.update_layout(height=600, width=1200, xaxis_title='Date (DD-MM-YY)', yaxis_title='Funding Mechanism')
+fig.add_trace(go.Scatter(x=start_dt_and_fundmech['start_dt'], y=start_dt_and_fundmech['funding_mechanism'], mode='markers', marker=dict(color=[funding_mechanism_colours[fm] for fm in start_dt_and_fundmech['funding_mechanism']]),\
+                         customdata=start_dt_and_fundmech['count'], hovertemplate=('Date: %{x}<br>' 'Funding Mechanism: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{funding_mechanism_types[0]}', showlegend=False))
+for i in range(len(funding_mechanism_types)-1):
+  fig.add_trace(go.Scatter(x=start_dt_and_fundmech['start_dt'], y=start_dt_and_fundmech['funding_mechanism'], mode='markers', marker=dict(color=[funding_mechanism_colours[fm] for fm in start_dt_and_fundmech['funding_mechanism']]),\
+                           customdata=start_dt_and_fundmech['count'], hovertemplate=('Date: %{x}<br>' 'Funding Mechanism: %{y}<br>' 'Projects Funded: %{customdata}' '<extra></extra>'), name=f'{funding_mechanism_types[i+1]}', showlegend=False))
+fig.update_layout(height=600, width=1200, xaxis_title='Date (DD-MM-YY)', yaxis_title='Funding Mechanism', title='Funding Mechanism vs Date', hovermode='closest')
 st.write(fig)
+container = st.container()
+container.write("This plot displays...")
 st.divider()
 
 st.subheader("Plot title here")
@@ -446,4 +465,6 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1200, height=600, margin=dict(l=100, r=50, t=120, b=150))
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=12))
 st.write(fig)
+container = st.container()
+container.write("This plot displays...")
 st.divider()
