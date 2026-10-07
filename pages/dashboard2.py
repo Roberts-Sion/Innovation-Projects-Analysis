@@ -149,7 +149,7 @@ fig.add_trace(go.Bar(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_b
 fig.add_trace(go.Bar(x=bts_useful_tech_types_4_budget, y=bts_useful_tech_sif_funding, name=f'Total SIF Funding (£{TOTAL_useful_tech_sif_funding:,.2f})', showlegend=True), row=1, col=1)
 fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_budget, mode='markers+lines', showlegend=False), row=2, col=1)
 fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_useful_tech_sif_funding, mode='markers+lines', showlegend=False), row=2, col=1)
-fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_budget - bts_useful_tech_sif_funding, mode='markers', name='Difference (£)', showlegend=True), row=3, col=1)
+fig.add_trace(go.Scatter(x=bts_useful_tech_types_4_budget, y=bts_total_useful_tech_budget - bts_useful_tech_sif_funding, mode='markers', name='Difference (£)', showlegend=False), row=3, col=1)
 fig.update_xaxes(tickmode='linear', tickangle=30, tickfont=dict(size=8))
 fig.update_xaxes(title_text='Technology')
 fig.update_yaxes(title_text='Total Funding (£)')
