@@ -387,13 +387,20 @@ tech_4_fundmech_type = []
 for i in range(len(funding_mechanism_types)):
   counts = tech_4_fundmech[i].value_counts()
   counts = counts.reindex(technology_types, fill_value=0)
+  tech_4_fundmech_type.append(counts)
+
+bts_tech_4_fundmech_type = []
+bts_technology_types = []
+for i in range(len(funding_mechanism_types)):
+  counts = tech_4_fundmech_type[i].sort_values(ascending=False)
   non_zero_counts = counts[counts > 0]
-  tech_4_fundmech_type.append(non_zero_counts)
+  bts_technology_types.append(non_zero_counts.index)
+  bts_tech_4_fundmech_type.append(non_zero_counts)
 
 fig = go.Figure()
-fig.add_trace(go.Bar(x=tech_4_fundmech_type[0].index, y=tech_4_fundmech_type[0].values, name=f'{funding_mechanism_types[0]}'))
+fig.add_trace(go.Bar(x=bts_technology_types[0], y=bts_tech_4_fundmech_type[0].values, name=f'{funding_mechanism_types[0]}'))
 for i in range(1, len(funding_mechanism_types)):
-  fig.add_trace(go.Bar(x=tech_4_fundmech_type[i].index, y=tech_4_fundmech_type[i].values, name=f'{funding_mechanism_types[i]}', visible=False))
+  fig.add_trace(go.Bar(x=bts_technology_types[i], y=bts_tech_4_fundmech_type[i].values, name=f'{funding_mechanism_types[i]}', visible=False))
 
 buttons = []
 buttons.append(dict(label=f'{funding_mechanism_types[0]}', method='update', args=[{'visible': [True] + [False]*(len(funding_mechanism_types) - 1)}, {'title': f'Technology Areas for {funding_mechanism_types[0]}'}]))
