@@ -79,8 +79,7 @@ funding_mechanism_types = funding_mechanism.unique()
 funding_mechanism_types = [ft for ft in funding_mechanism_types if pd.notna(ft)]
 funding_mechanism_types_idx = [funding_mechanism[funding_mechanism.str.contains(ft, na=False)].index.tolist() for ft in funding_mechanism_types]
 
-st.subheader("Plot of Total Project Budgets vs Sector (use as test)")
-st.write("(Description of plot to be included here)")
+st.subheader("Plot of Total Project Budgets against Lead Sector")
 total_sector_budget = np.zeros(len(sector_types))
 for i in range(len(sector_types)):
   for j in range(len(sector_types_idx[i])):
@@ -90,6 +89,13 @@ bts_total_sector_budget = total_sector_budget[bts_total_sector_budget_idx]
 bts_sector_types = np.array(sector_types)[bts_total_sector_budget_idx]
 fig = px.bar(x=bts_sector_types, y=bts_total_sector_budget, labels={'x':'Sector', 'y':'Total Funding (£)'})
 st.write(fig)
+container = st.container()
+container.write("This plot displays the total budget that has been allocated to projects across each sector, where\
+                the total is determined by summing the budgets of all projects in a given sector. Due to the nature\
+                of some projects being included in more than one sector, this plot does count some projects more than\
+                once - to determine which projects are the culprits, the table below included each project included in\
+                a given sector.")
+
 sector_names = ["Electricity Distribution", "Electricity Transmission", "Gas Distribution", "Gas Transmission"]
 sector_indices = {"Electricity Distribution": sector_types_idx[0], "Electricity Transmission": sector_types_idx[1],\
                   "Gas Distribution": sector_types_idx[2], "Gas Transmission": sector_types_idx[3]}
@@ -114,7 +120,7 @@ if st.session_state.selected_sector is not None:
     st.rerun()
 st.divider()
 
-st.subheader("Plot of Total Project Budgets vs Sector, no double counting (use as test)")
+st.subheader("Plot of Total Project Budgets against Sector (no double counting)")
 #Plot of total project budgets vs sector, where there is no double counting
 all_sector_types = sector.unique()
 all_sector_types = [ast for ast in all_sector_types if pd.notna(ast)]
@@ -124,10 +130,13 @@ all_sector_budget = (pd.DataFrame({'sector': sector, 'budget': budget})).dropna(
 
 fig = px.bar(x=all_sector_budget.index, y=all_sector_budget.values, labels={'x':'Sector', 'y':'Total Funding (£)'})
 st.write(fig)
+container = st.container()
+container.write("This plot displays the total budget that has been allocated to projects across each sector, where\
+                the total is determined by summing the budgets of all projects in a given sector. In attempt to avoid\
+                overcounting projects, categories have been included in this plot that include multiple sectors.")
 st.divider()
 
-st.subheader('(Other test plot)')
-st.write("(Description of plot to be included here)")
+st.subheader('Cumulative number of Projects over Time, for a given Sector')
 start_dt_sort = np.sort(start_dt)
 total_cumul = [np.sum(start_dt_sort <= date) for date in start_dt_sort]
 end = 0
@@ -167,10 +176,13 @@ for i, sc in enumerate(sector_types):
 fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactive=True, x=0, xanchor='left', y=1.12, yanchor='top')],\
                   xaxis_title='Date (DD-MM-YY)', yaxis_title='Number of Projects', title='Cumulative Number of Projects', hovermode='x unified')
 st.write(fig)
+container = st.container()
+container.write("This plot displays the cumulative number of projects to be funded over time, where a dropdown menu\
+                allows for the plot to be altered to be across all sectors, or for individual sectors.")
 st.divider()
 
-st.subheader("Plot of technology types for each strategy theme")
-#Create plots that display the technologies funded in each sector
+st.subheader("Plot of number of Projects funded for each Technology type, for a given Strategy theme")
+#Create plots that display the technologies funded in each strategy theme
 tech_4_strat = []
 for i in range(len(strategy_types)):
   filtered_tech = technology[strategy_types_idx[i]].dropna()
@@ -208,6 +220,8 @@ fig.update_layout(updatemenus=[dict(buttons=buttons, direction='down', showactiv
 fig.update_layout(width=1400, height=600)
 fig.update_xaxes(tickmode='linear', tickangle=20, tickfont=dict(size=8))
 st.write(fig)
+container = st.container()
+container.write("Write description here.")
 st.divider()
 
 st.subheader("Plot of Count vs Technology Area (for each sector - use as test)")
